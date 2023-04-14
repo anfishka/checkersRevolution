@@ -18,22 +18,29 @@ char board[BOARD_S][BOARD_S] = {
     { O, EMPTY, O, EMPTY, O, EMPTY, O, EMPTY }
 };
 
-void printBoard() {
+void printBoard()
+{
     cout << "  ";
-    for (int i = 0; i < BOARD_S; i++) {
+    for (int i = 0; i < BOARD_S; i++) 
+    {
         cout << i << " ";
     }
     cout << endl;
-    for (int i = 0; i < BOARD_S; i++) {
+    for (int i = 0; i < BOARD_S; i++) 
+    {
         cout << i << " ";
-        for (int j = 0; j < BOARD_S; j++) {
-            if (board[i][j] != X && EMPTY != board[i][j]) {
+        for (int j = 0; j < BOARD_S; j++) 
+        {
+            if (board[i][j] != X && EMPTY != board[i][j]) 
+            {
                 cout << "\x1b[43m" << board[i][j] << " " << "\033[0m";
             }
-            else if (board[i][j] == X) {
+            else if (board[i][j] == X) 
+            {
                 cout << "\x1b[44m" << board[i][j] << " " << "\033[0m";
             }
-            else {
+            else
+            {
                 cout << "\x1b[49m" << board[i][j] << " " << "\033[0m";
             }
 
@@ -42,25 +49,31 @@ void printBoard() {
     }
 }
 
-bool isMoveValid(int startRow, int startCol, int endRow, int endCol, char player) {
+bool isMoveValid(int startRow, int startCol, int endRow, int endCol, char player) 
+{
 
     // Check: chacker moves diagonally
-    if (abs(startRow - endRow) != abs(startCol - endCol)) {
+    if (abs(startRow - endRow) != abs(startCol - endCol)) 
+    {
         return false;
     }
     // Check : chacker moves only one square or two squares if it captures an opponent's checker 
-    if (abs(startRow - endRow) != 1 && abs(startRow - endRow) != 2) {
+    if (abs(startRow - endRow) != 1 && abs(startRow - endRow) != 2) 
+    {
         return false;
     }
     // Check: chacker moves to the right or to the left
-    if (abs(startCol - endCol) != 1 && abs(startCol - endCol) != 2) {
+    if (abs(startCol - endCol) != 1 && abs(startCol - endCol) != 2) 
+    {
         return false;
     }
     // Check: chacker moved and captured opponent's chacker
-    if (abs(startRow - endRow) == 2 && abs(startCol - endCol) == 2) {
+    if (abs(startRow - endRow) == 2 && abs(startCol - endCol) == 2) 
+    {
         int enemyRow = (startRow + endRow) / 2;
         int enemyCol = (startCol + endCol) / 2;
-        if (board[enemyRow][enemyCol] == EMPTY || board[enemyRow][enemyCol] == player) {
+        if (board[enemyRow][enemyCol] == EMPTY || board[enemyRow][enemyCol] == player) 
+        {
             return false;
         }
         board[enemyRow][enemyCol] = EMPTY;
@@ -71,6 +84,27 @@ bool isMoveValid(int startRow, int startCol, int endRow, int endCol, char player
 
 int main()
 {
-    printBoard();
+    int startRow, startCol, endRow, endCol;
+    char player = O;
+    while (true) 
+    {
+        printBoard();
+        cout << " player's turn. Enter starting row, starting column, ending row, ending column: ";
+        cin >> startRow;
+        cin >> startCol;
+        cin >> endRow;
+        cin >> endCol;
+
+        if (!isMoveValid(startRow, startCol, endRow, endCol, player)) 
+        {
+            cout << "Invalid move. Try again." << endl;
+            continue;
+        }
+
+        board[endRow][endCol] = player;
+        board[startRow][startCol] = EMPTY;
+
+        player = (player == O) ? X : O;
+    }
     return 0;
 }
