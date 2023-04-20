@@ -23,21 +23,21 @@ char board[BOARD_S][BOARD_S] = {
 void printBoard()
 {
     cout << "  ";
-    for (int i = 0; i < BOARD_S; i++) 
+    for (int i = 0; i < BOARD_S; i++)
     {
         cout << i << " ";
     }
     cout << endl;
-    for (int i = 0; i < BOARD_S; i++) 
+    for (int i = 0; i < BOARD_S; i++)
     {
         cout << i << " ";
-        for (int j = 0; j < BOARD_S; j++) 
+        for (int j = 0; j < BOARD_S; j++)
         {
-            if (board[i][j] != X && EMPTY != board[i][j]) 
+            if (board[i][j] != X && EMPTY != board[i][j])
             {
                 cout << "\x1b[43m" << board[i][j] << " " << "\033[0m";
             }
-            else if (board[i][j] == X) 
+            else if (board[i][j] == X)
             {
                 cout << "\x1b[44m" << board[i][j] << " " << "\033[0m";
             }
@@ -53,67 +53,67 @@ void printBoard()
 
 bool isMoveValid(int startRow, int startCol, int endRow, int endCol, char player)
 {
-	// check start pos
-	if (player == X && board[startRow][startCol] != X && board[startRow][startCol] != X_KING) {
-		return false;
-	}
-	if (player == O && board[startRow][startCol] != O && board[startRow][startCol] != O_KING) {
-		return false;
-	}
+    // check start pos
+    if (player == X && board[startRow][startCol] != X && board[startRow][startCol] != X_KING) {
+        return false;
+    }
+    if (player == O && board[startRow][startCol] != O && board[startRow][startCol] != O_KING) {
+        return false;
+    }
 
-	// check is the end pos == empty
-	if (board[endRow][endCol] != EMPTY) {
-		return false;
-	}
-	// check diagonally steps
-	int delta_x = endRow - startRow;
-	int delta_y = endCol - startCol;
-	if (player != X_KING && player != O_KING) {
-		// check distance start and end pos == 2 
-		if (abs(delta_x) == 2 && abs(delta_y) == 2) {
-			//check is opponent in our way
-			int capture_x = (startRow + endRow) / 2;
-			int capture_y = (startCol + endCol) / 2;
-			if (board[capture_x][capture_y] == EMPTY) {
-				return false;
-			}
-			// check is opponenet
-			if (player == X && (board[capture_x][capture_y] != O && board[capture_x][capture_y] != O_KING)) {
-				return false;
-			}
-			if (player == O && (board[capture_x][capture_y] != X && board[capture_x][capture_y] != X_KING)) {
-				return false;
-			}
-		}
-		else {
-			// check end and start pos ==  1
-			if (abs(delta_x) != 1 || abs(delta_y) != 1) {
-				return false;
-			}
-		}
+    // check is the end pos == empty
+    if (board[endRow][endCol] != EMPTY) {
+        return false;
+    }
+    // check diagonally steps
+    int delta_x = endRow - startRow;
+    int delta_y = endCol - startCol;
+    if (player != X_KING && player != O_KING) {
+        // check distance start and end pos == 2 
+        if (abs(delta_x) == 2 && abs(delta_y) == 2) {
+            //check is opponent in our way
+            int capture_x = (startRow + endRow) / 2;
+            int capture_y = (startCol + endCol) / 2;
+            if (board[capture_x][capture_y] == EMPTY) {
+                return false;
+            }
+            // check is opponenet
+            if (player == X && (board[capture_x][capture_y] != O && board[capture_x][capture_y] != O_KING)) {
+                return false;
+            }
+            if (player == O && (board[capture_x][capture_y] != X && board[capture_x][capture_y] != X_KING)) {
+                return false;
+            }
+        }
+        else {
+            // check end and start pos ==  1
+            if (abs(delta_x) != 1 || abs(delta_y) != 1) {
+                return false;
+            }
+        }
 
-		// check just 1 step
-		if (abs(delta_x) == 1) {
-			//check direcrion
-			if (delta_x > 0 && player == O) {
-				return false;
-			}
-			if (delta_x < 0 && player == X) {
-				return false;
-			}
-		}
-	}
-	else {
-		//check kings
-		if (abs(delta_x) != abs(delta_y))
-			return false;
-	}
-	return true;
+        // check just 1 step
+        if (abs(delta_x) == 1) {
+            //check direcrion
+            if (delta_x > 0 && player == O) {
+                return false;
+            }
+            if (delta_x < 0 && player == X) {
+                return false;
+            }
+        }
+    }
+    else {
+        //check kings
+        if (abs(delta_x) != abs(delta_y))
+            return false;
+    }
+    return true;
 }
 
 bool forcedCapture() {
-	// check capture
-	return true;
+    // check capture
+    return true;
 }
 
 // foo for moving
@@ -124,7 +124,7 @@ bool move(int startRow, int startCol, int endRow, int endCol) {
         board[startRow][startCol] = EMPTY;
     }
     else {
-        cout << "invalid move" << endl;
+        cout << "\n\x1b[31mInvalid move\033[0m" << endl;
         return false;
     }
 
@@ -145,7 +145,7 @@ bool move(int startRow, int startCol, int endRow, int endCol) {
     }
 }
 
-// end of 
+// end of game
 bool isGameOver() {
     int num_x = 0, num_o = 0;
     for (int i = 0; i < BOARD_S; i++) {
@@ -163,27 +163,26 @@ bool isGameOver() {
 
 int main()
 {
+    int turn = 0;
     int startRow, startCol, endRow, endCol;
-    char player = O;
-    while (true) 
+    char player = (turn % 2 == 0) ? X : O;
+
+    while (!isGameOver())
     {
         printBoard();
-        cout << " player's turn. Enter starting row, starting column, ending row, ending column: ";
+        cout << "\n\x1b[45m" << player << " player's turn. Enter starting row, starting column, ending row, ending column: \n" << "\033[0m";
+
         cin >> startRow;
         cin >> startCol;
         cin >> endRow;
         cin >> endCol;
-
-        if (!isMoveValid(startRow, startCol, endRow, endCol, player)) 
+        if (move(startRow, startCol, endRow, endCol))
         {
-            cout << "Invalid move. Try again." << endl;
-            continue;
+            turn++;
+            player = (turn % 2 == 0 ? X : O);
         }
-
-        board[endRow][endCol] = player;
-        board[startRow][startCol] = EMPTY;
-
-        player = (player == O) ? X : O;
     }
+    printBoard();
+    cout << "\n\x1b[42m" << " WIN!" << "\033[0m" << endl;
     return 0;
 }
