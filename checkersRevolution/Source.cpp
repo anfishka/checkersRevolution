@@ -6,6 +6,8 @@ const int BOARD_S = 8;
 const char EMPTY = '-';
 const char O = 'O';
 const char X = 'X';
+const char O_KING = 'o';
+const char X_KING = 'x';
 
 char board[BOARD_S][BOARD_S] = {
     { EMPTY, X, EMPTY, X, EMPTY, X, EMPTY, X },
@@ -49,37 +51,69 @@ void printBoard()
     }
 }
 
-bool isMoveValid(int startRow, int startCol, int endRow, int endCol, char player) 
+bool isMoveValid(int startRow, int startCol, int endRow, int endCol, char player)
 {
+	// check start pos
+	if (player == X && board[startRow][startCol] != X && board[startRow][startCol] != X_KING) {
+		return false;
+	}
+	if (player == O && board[startRow][startCol] != O && board[startRow][startCol] != O_KING) {
+		return false;
+	}
 
-    // Check: chacker moves diagonally
-    if (abs(startRow - endRow) != abs(startCol - endCol)) 
-    {
-        return false;
-    }
-    // Check : chacker moves only one square or two squares if it captures an opponent's checker 
-    if (abs(startRow - endRow) != 1 && abs(startRow - endRow) != 2) 
-    {
-        return false;
-    }
-    // Check: chacker moves to the right or to the left
-    if (abs(startCol - endCol) != 1 && abs(startCol - endCol) != 2) 
-    {
-        return false;
-    }
-    // Check: chacker moved and captured opponent's chacker
-    if (abs(startRow - endRow) == 2 && abs(startCol - endCol) == 2) 
-    {
-        int enemyRow = (startRow + endRow) / 2;
-        int enemyCol = (startCol + endCol) / 2;
-        if (board[enemyRow][enemyCol] == EMPTY || board[enemyRow][enemyCol] == player) 
-        {
-            return false;
-        }
-        board[enemyRow][enemyCol] = EMPTY;
-    }
-    return true;
+	// check is the end pos == empty
+	if (board[endRow][endCol] != EMPTY) {
+		return false;
+	}
+	// check diagonally steps
+	int delta_x = endRow - startRow;
+	int delta_y = endCol - startCol;
+	if (player != X_KING && player != O_KING) {
+		// check distance start and end pos == 2 
+		if (abs(delta_x) == 2 && abs(delta_y) == 2) {
+			//check is opponent in our way
+			int capture_x = (startRow + endRow) / 2;
+			int capture_y = (startCol + endCol) / 2;
+			if (board[capture_x][capture_y] == EMPTY) {
+				return false;
+			}
+			// check is opponenet
+			if (player == X && (board[capture_x][capture_y] != O && board[capture_x][capture_y] != O_KING)) {
+				return false;
+			}
+			if (player == O && (board[capture_x][capture_y] != X && board[capture_x][capture_y] != X_KING)) {
+				return false;
+			}
+		}
+		else {
+			// check end and start pos ==  1
+			if (abs(delta_x) != 1 || abs(delta_y) != 1) {
+				return false;
+			}
+		}
 
+		// check just 1 step
+		if (abs(delta_x) == 1) {
+			//check direcrion
+			if (delta_x > 0 && player == O) {
+				return false;
+			}
+			if (delta_x < 0 && player == X) {
+				return false;
+			}
+		}
+	}
+	else {
+		//check kings
+		if (abs(delta_x) != abs(delta_y))
+			return false;
+	}
+	return true;
+}
+
+bool forcedCapture() {
+	// check capture
+	return true;
 }
 
 int main()
