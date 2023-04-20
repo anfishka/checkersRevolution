@@ -116,6 +116,51 @@ bool forcedCapture() {
 	return true;
 }
 
+// foo for moving
+bool move(int startRow, int startCol, int endRow, int endCol) {
+    char player = board[startRow][startCol];
+    if (isMoveValid(startRow, startCol, endRow, endCol, player) && forcedCapture()) {
+        board[endRow][endCol] = board[startRow][startCol];
+        board[startRow][startCol] = EMPTY;
+    }
+    else {
+        cout << "invalid move" << endl;
+        return false;
+    }
+
+    int take_x = endRow > startRow ? -1 : 1;
+    int take_y = endCol > startCol ? -1 : 1;
+
+    if (abs(endRow - startRow) != 1) {
+        int capture_x = endRow + take_x;
+        int capture_y = endCol + take_y;
+        board[capture_x][capture_y] = EMPTY;
+    }
+    // king
+    if (player == O && endRow == 0) {
+        board[endRow][endCol] = O_KING;
+    }
+    if (player == X && endRow == 7) {
+        board[endRow][endCol] = X_KING;
+    }
+}
+
+// end of 
+bool isGameOver() {
+    int num_x = 0, num_o = 0;
+    for (int i = 0; i < BOARD_S; i++) {
+        for (int j = 0; j < BOARD_S; j++) {
+            if (board[i][j] == X || board[i][j] == X_KING) {
+                num_x++;
+            }
+            if (board[i][j] == O || board[i][j] == O_KING) {
+                num_o++;
+            }
+        }
+    }
+    return (num_x == 0 || num_o == 0);
+}
+
 int main()
 {
     int startRow, startCol, endRow, endCol;
